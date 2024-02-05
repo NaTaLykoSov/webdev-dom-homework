@@ -67,7 +67,7 @@
   let comments = [
     // 
   ];
-
+const fetchPromiseGet = () => {
   let fetchPromise = fetch(
     'https://wedev-api.sky.pro/api/v1/nata_kosovskaya/comments',
   {
@@ -90,8 +90,9 @@
     comments = appComments;
     renderComments();  
   });
-  })
-
+  });
+}
+fetchPromiseGet();
 
 // function sanitizeHTML(htmlString) {
 //   return htmlString
@@ -144,19 +145,8 @@ const renderComments = () => {
   nameInputElement.value = "";
   textInputElement.value = "";    
 
-// let newTime1 = {
-//   hour: 'numeric',
-//   minute: 'numeric',
-//   }; 
-
-buttonElement.addEventListener('click', () => {
-      
-  buttonElement.classList.remove("error");
-    if(nameInputElement.value === "" ||  textInputElement.value ===""){
-        buttonElement.classList.add("error");
-        return;
-      }
-      fetchPromise = fetch('https://wedev-api.sky.pro/api/v1/nata_kosovskaya/comments',
+const fetchPromisePost = () => {
+  const fetchPromise = fetch('https://wedev-api.sky.pro/api/v1/nata_kosovskaya/comments',
   {
     method: "POST",
     body: JSON.stringify({
@@ -168,49 +158,27 @@ buttonElement.addEventListener('click', () => {
     let jsonPromise = response.json();
     jsonPromise.then((responseData) => {
       console.log(response);
-      let appComments = responseData.comments.map((comment) => {
-        return { 
-        name: comment.author.name,
-        date: newDate(comment.date),
-        text: comment.text,
-        likes: comment.likes,
-        isLiked: false,
-        };
-    });
-    comments = appComments;
+     
     renderComments ();
     });
   });
+}
+
+renderComments ();
+
+buttonElement.addEventListener('click', () => {
+      
+  buttonElement.classList.remove("error");
+    if(nameInputElement.value === "" ||  textInputElement.value ===""){
+        buttonElement.classList.add("error");
+        return;
+      }
+      fetchPromisePost();
+
+      nameInputElement.value = "";
+      textInputElement.value = "";
+      fetchPromiseGet();
   })
-//       const time = new Date();
-//       let dateTime = time.getDate() + "." + (time.getMonth() + 1)+ 
-// "." + time.getFullYear().toString().substring(2) + " " + time.toLocaleString('ru', newTime);
-    
-   
-  fetchPromise = fetch(
-    'https://wedev-api.sky.pro/api/v1/nata_kosovskaya/comments',
-  {
-    method: "GET",
-  });
-  
-  fetchPromise.then((response) => {
-    let jsonPromise = response.json();
-    jsonPromise.then((responseData) => {
-      console.log(response);
-      let appComments = responseData.comments.map((comment) => {
-        return { 
-        name: comment.author.name,
-        date: new Date(comment.date),
-        text: comment.text,
-        likes: comment.likes,
-        isLiked: false,
-        };
-    });
-    comments = appComments;
-    renderComments();  
-  });
-  })
- 
 
 nameInputElement.value = "";
 textInputElement.value = "";
