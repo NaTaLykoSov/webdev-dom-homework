@@ -3,36 +3,31 @@
   <head>
     <title>Проект "Комменты"</title>
     <meta charset="utf-8" />
-    <link id="elementStyle" rel="stylesheet" href="styles.css" />
+    <link id = "elementStyle" rel="stylesheet" href="styles.css" />
   </head>
 
   <body>
     <div class="container">
-      <span id="preloading">Комментарии загружаются</span>
-      <ul id="list-input" class="comments">
-        <!-- Список в JS -->
+      <ul id = "list-input" class="comments">
+  <!-- Список в JS -->
       </ul>
-      <div class="add-form" id="addForm">
+      <div class="add-form">
         <input
           type="text"
           class="add-form-name"
-          id="name-input"
+          id = "name-input"
           placeholder="Введите ваше имя"
         />
         <textarea
           type="textarea"
           class="add-form-text"
-          id="text-input"
+          id = "text-input"
           placeholder="Введите ваш комментарий"
           rows="4"
         ></textarea>
         <div class="add-form-row">
-          <button class="add-form-button" id="add-button">Написать</button>
+          <button class="add-form-button" id = "add-button">Написать</button>
         </div>
-        <!--Комментарий добавляется-->
-      </div>
-      <div class="loading" id="loading">
-        Комментарий добавляется
       </div>
     </div>
   </body>
@@ -43,86 +38,82 @@
   </style>
   <script>
     "use strict";
-    const buttonElement = document.getElementById("add-button");
+    const buttonElement = document.getElementById('add-button');
     const listElement = document.getElementById("list-input");
-    const addFormElement = document.getElementById("addForm");    
-    const nameInputElement = document.getElementById("name-input");
-    const textInputElement = document.getElementById("text-input");
-    const formText = document.querySelector(".add-form-text");
-    const hidePreloader = document.getElementById("preloading");
-    const hideForm = document.querySelector(".add-form");
-    const loading = document.getElementById("loading");
-    var oldLoaderDisplay = hideForm.style.display;
-    
+    const nameInputElement = document.getElementById('name-input');
+    const textInputElement = document.getElementById('text-input');
+   
 
-    const initEventListeners = () => {
-      const likeButtonElements = document.querySelectorAll(".like-button");
-      for (const likeButtonElement of likeButtonElements) {
-        likeButtonElement.addEventListener("click", (event) => {
-          event.stopPropagation();
-          const index = likeButtonElement.dataset.index;
-          if (comments[index].isLiked === false) {
-            comments[index].likes++;
-            comments[index].isLiked = true;
-          } else {
+    const initEventListeners = () =>{
+    const likeButtonElements = document.querySelectorAll('.like-button');
+    for(const likeButtonElement of likeButtonElements){
+    likeButtonElement.addEventListener('click', event =>{
+      event.stopPropagation();
+      const index = likeButtonElement.dataset.index;
+      if (comments[index].isLiked === false){
+              comments[index].likes++;
+              comments[index].isLiked = true;
+            }
+          else {
             comments[index].likes--;
             comments[index].isLiked = false;
           }
-          renderComments();
-        });
-      }
-    };
-    initEventListeners();
+        renderComments (); 
+  });
+  };};
+  initEventListeners();
 
+
+  let comments = [
+    // 
+  ];
+const fetchPromiseGet = () => {
+  let fetchPromise = fetch(
+    'https://wedev-api.sky.pro/api/v1/nata_kosovskaya/comments',
+  {
+    method: "GET",
+  });
   
+  fetchPromise.then((response) => {
+    let jsonPromise = response.json();
+    jsonPromise.then((responseData) => {
+      console.log(response);
+      let appComments = responseData.comments.map((comment) => {
+        return { 
+        name: comment.author.name,
+        date: new Date(comment.date),
+        text: comment.text,
+        likes: comment.likes,
+        isLiked: false,
+        };
+    });
+    comments = appComments;
+    renderComments();  
+  });
+  });
+}
+fetchPromiseGet();
 
-    let comments = [
-      //
-    ];
-    const fetchPromiseGet = () => {
-      return fetch(
-        "https://wedev-api.sky.pro/api/v1/nata_kosovskaya/comments",
-        {
-          method: "GET",
-        }
-      )
-        .then((response) => {
-          return response.json();
-        })
-        .then((responseData) => {
-          const appComments = responseData.comments.map((comment) => {
-            return {
-              name: comment.author.name,
-              date: new Date(comment.date),
-              text: comment.text,
-              likes: comment.likes,
-              isLiked: false,
-            };
-          });
-          comments = appComments;
-          renderComments();
-          hidePreloader.style.display = "none";
-        });
-    };
-    fetchPromiseGet();
-    
+// function sanitizeHTML(htmlString) {
+//   return htmlString
+//   .replaceAll("<", "&lt;")
+//   .replaceAll(">", "&gt;")
+//   .replaceAll("&", "&amp;")
+//   .replaceAll('"', "&quot;");
+// }
+// console.log(sanitizeHTML);
 
-    const renderComments = () => {
-      const commentsHTML = comments
-        .map((comment, index) => {
-          let newTime = {
-            hour: "numeric",
-            minute: "numeric",
-          };
-          const time = new Date();
-          let dateTime =
-            comment.date.getDate() +
-            "." +
-            (comment.date.getMonth() + 1) +
-            "." +
-            comment.date.getFullYear().toString().substring(2) +
-            " " +
-            comment.date.toLocaleString("ru", newTime);
+
+
+const renderComments = () => {
+  const commentsHTML = comments.map((comment, index) => {
+  let newTime = {
+  hour: 'numeric',
+  minute: 'numeric',
+  };
+  const time = new Date();
+  let dateTime = comment.date.getDate() + "." + (comment.date.getMonth() + 1)+ 
+"." + comment.date.getFullYear().toString().substring(2) + " " + comment.date.toLocaleString('ru', newTime);      
 
           return `<li class="comment">
           <div class="comment-header">
@@ -136,107 +127,79 @@
          <div class="comment-footer">
             <div class="likes">
               <span  class="likes-counter">${comment.likes}</span>
-              <button data-index ='${index}' class="${
-            comments[index].isLiked ? "like-button -active-like" : "like-button"
-          }">
+              <button data-index ='${index}' class="${comments[index].isLiked ? 'like-button -active-like' : 'like-button'}">
                 <div></div>
                 </button>
             </div>
           </div>
 
         </li>`;
-        })
-        .join("");
-
-      listElement.innerHTML = commentsHTML;
-      initEventListeners();
-    };
-    renderComments();
-
-    nameInputElement.value = "";
-    textInputElement.value = "";
-   
-    
-
-    // hideForm.style.display = "none";
-    // hideForm. addFormElement = "Комментарий добавляется..."
-    
-
-    
+  }). join(''); 
 
 
-      buttonElement.addEventListener("click", () => {
-      buttonElement.classList.remove("error");
-      if (nameInputElement.value === "" || textInputElement.value === "") {
+  listElement.innerHTML = commentsHTML;
+  initEventListeners();
+};
+  renderComments ();
+
+  nameInputElement.value = "";
+  textInputElement.value = "";    
+
+const fetchPromisePost = () => {
+  const fetchPromise = fetch('https://wedev-api.sky.pro/api/v1/nata_kosovskaya/comments',
+  {
+    method: "POST",
+    body: JSON.stringify({
+    text:  textInputElement.value,
+    name: nameInputElement.value,
+    }),
+  })
+    fetchPromise.then((response) => {
+    let jsonPromise = response.json();
+    jsonPromise.then((responseData) => {
+      console.log(response);
+     
+    renderComments ();
+    });
+  });
+}
+
+renderComments ();
+
+buttonElement.addEventListener('click', () => {
+      
+  buttonElement.classList.remove("error");
+    if(nameInputElement.value === "" ||  textInputElement.value ===""){
         buttonElement.classList.add("error");
         return;
-      };
-          oldLoaderDisplay = hideForm.style.display;
-          hideForm.style.display = "none";
-          loading.style.display = "block";
-      
-
-        var fetchPromisePost = () => {
-     return fetchPromisePost = fetch(
-        "https://wedev-api.sky.pro/api/v1/nata_kosovskaya/comments",
-        {
-          method: "POST",
-          body: JSON.stringify({
-            text: textInputElement.value,
-            name: nameInputElement.value,
-          }),
-        }
-      )
-        .then((response) => {
-          return response.json();
-        })
-        .then((responseData) => {
-          fetchPromiseGet();
-          renderComments();
-          nameInputElement.value = "";
-          textInputElement.value = "";
-         })
-        .then((data) => {
-          loading.style.display="none";
-          //hideForm.addFormElement = "Комментарий добавлен..."
-          hideForm.style.display=oldLoaderDisplay;
-          // loading.style.display = "none";
-           
-          
-        });
-        
-      };
-
-  
+      }
       fetchPromisePost();
-    });
 
-    nameInputElement.value = "";
-    textInputElement.value = "";
-    initEventListeners();
+      nameInputElement.value = "";
+      textInputElement.value = "";
+      fetchPromiseGet();
+  })
 
-//     document.addEventListener("DOMContentLoaded", async () => {
-//   listElement.innerHTML = "<p>Комментарий загружается...</p>";
-//   await fetchPromiseGet();
-// });
-    // hideForm.disabled = true;
-    // hideForm. addFormElement = "Комментарий добавляется..."
+nameInputElement.value = "";
+textInputElement.value = "";
+  
+initEventListeners();
+// answerComment();
+// renderComments ();  
 
-    // answerComment();
-    // renderComments ();
+// function answerComment() {
+//   const commentAnswer = document.querySelectorAll('.comment');
+//   const formText = document.querySelector('.add-form-text');
 
-    // function answerComment() {
-    //   const commentAnswer = document.querySelectorAll('.comment');
-    //   const formText = document.querySelector('.add-form-text');
+//   commentAnswer.forEach((comment, index) =>{
+//     comment.addEventListener('click', () => {
+//       console.log(index);
+//       formText.value = `-${comments[index].name} \n -${comments[index].comment}`;
+//     renderComments()
+//     });
+//   });
+// };
+// answerComment();
 
-    //   commentAnswer.forEach((comment, index) =>{
-    //     comment.addEventListener('click', () => {
-    //       console.log(index);
-    //       formText.value = `-${comments[index].name} \n -${comments[index].comment}`;
-    //     renderComments()
-    //     });
-    //   });
-    // };
-    // answerComment();
-  </script>
+ </script>
 </html>
