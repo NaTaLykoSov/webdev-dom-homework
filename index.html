@@ -31,9 +31,7 @@
         </div>
         <!--Комментарий добавляется-->
       </div>
-      <div class="loading" id="loading">
-        Комментарий добавляется
-      </div>
+      <div class="loading" id="loading">Комментарий добавляется</div>
     </div>
   </body>
   <style>
@@ -45,7 +43,7 @@
     "use strict";
     const buttonElement = document.getElementById("add-button");
     const listElement = document.getElementById("list-input");
-    const addFormElement = document.getElementById("addForm");    
+    const addFormElement = document.getElementById("addForm");
     const nameInputElement = document.getElementById("name-input");
     const textInputElement = document.getElementById("text-input");
     const formText = document.querySelector(".add-form-text");
@@ -53,7 +51,6 @@
     const hideForm = document.querySelector(".add-form");
     const loading = document.getElementById("loading");
     var oldLoaderDisplay = hideForm.style.display;
-    
 
     const initEventListeners = () => {
       const likeButtonElements = document.querySelectorAll(".like-button");
@@ -74,8 +71,6 @@
     };
     initEventListeners();
 
-  
-
     let comments = [
       //
     ];
@@ -87,7 +82,12 @@
         }
       )
         .then((response) => {
-          return response.json();
+          console.log(response);
+          if (response.status === 200) {
+            return response.json();
+          } else {
+            return Promise.reject("Сервер упал");
+          }
         })
         .then((responseData) => {
           const appComments = responseData.comments.map((comment) => {
@@ -102,10 +102,16 @@
           comments = appComments;
           renderComments();
           hidePreloader.style.display = "none";
+        })
+        .catch((error) => {
+          if (error.message === "Сервер упал") {
+            alert("Сервер сломался, попробуй позже");
+          } else {
+            return Promise.reject("Сервер упал");
+          }
         });
     };
     fetchPromiseGet();
-    
 
     const renderComments = () => {
       const commentsHTML = comments
@@ -155,59 +161,64 @@
 
     nameInputElement.value = "";
     textInputElement.value = "";
-   
-    
 
     // hideForm.style.display = "none";
     // hideForm. addFormElement = "Комментарий добавляется..."
-    
 
-    
-
-
-      buttonElement.addEventListener("click", () => {
+    buttonElement.addEventListener("click", () => {
       buttonElement.classList.remove("error");
       if (nameInputElement.value === "" || textInputElement.value === "") {
         buttonElement.classList.add("error");
         return;
-      };
-          oldLoaderDisplay = hideForm.style.display;
-          hideForm.style.display = "none";
-          loading.style.display = "block";
-      
+      }
+      oldLoaderDisplay = hideForm.style.display;
+      hideForm.style.display = "none";
+      loading.style.display = "block";
 
-        var fetchPromisePost = () => {
-     return fetchPromisePost = fetch(
-        "https://wedev-api.sky.pro/api/v1/nata_kosovskaya/comments",
-        {
-          method: "POST",
-          body: JSON.stringify({
-            text: textInputElement.value,
-            name: nameInputElement.value,
-          }),
-        }
-      )
-        .then((response) => {
-          return response.json();
-        })
-        .then((responseData) => {
-          fetchPromiseGet();
-          renderComments();
-          nameInputElement.value = "";
-          textInputElement.value = "";
-         })
-        .then((data) => {
-          loading.style.display="none";
-          //hideForm.addFormElement = "Комментарий добавлен..."
-          hideForm.style.display=oldLoaderDisplay;
-          // loading.style.display = "none";
-           
-          
-        });
-        
+      const fetchPromisePost = () => {
+        return fetch(
+          "https://wedev-api.sky.pro/api/v1/nata_kosovskaya/comments",
+          {
+            method: "POST",
+            body: JSON.stringify({
+              text: textInputElement.value,
+              name: nameInputElement.value,
+              forceError: true,
+            }),
+          }
+        )
+          .then((response) => {
+            if (response.status === 500){
+              throw new Error("Ошибка сервера");
+            }
+            if (response.status === 400){
+              throw new Error("Неверный запрос");
+            }
+            return response.json();
+          })
+          .then((responseData) => {
+            fetchPromiseGet();
+            renderComments();
+            nameInputElement.value = "";
+            textInputElement.value = "";
+          })
+          .then((data) => {
+            loading.style.display = "none";
+            hideForm.style.display = oldLoaderDisplay;
+          })
+          .catch((error) =>{
+            loading.style.display = "none";
+            hideForm.style.display = "flex";
+            forceError: false;
+            if (error.message === "Ошибка сервера"){
+              alert ("Сервер сломался, попробуйте позже");
+            }
+            if (error.message === "Неверный запрос"){
+              alert("Имя и комментарий должны быть не короче 3х символов");
+            }
+          })
+         
       };
-
-  
       fetchPromisePost();
     });
 
@@ -215,13 +226,7 @@
     textInputElement.value = "";
     initEventListeners();
 
-//     document.addEventListener("DOMContentLoaded", async () => {
-//   listElement.innerHTML = "<p>Комментарий загружается...</p>";
-//   await fetchPromiseGet();
-// });
-    // hideForm.disabled = true;
-    // hideForm. addFormElement = "Комментарий добавляется..."
-
+    //
     // answerComment();
     // renderComments ();
 
