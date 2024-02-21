@@ -107,6 +107,7 @@
           if (error.message === "Сервер упал") {
             alert("Сервер сломался, попробуй позже");
           } else {
+            alert("Ошибка загрузки данных!");
             return Promise.reject("Сервер упал");
           }
         });
@@ -131,26 +132,26 @@
             comment.date.toLocaleString("ru", newTime);
 
           return `<li class="comment">
-          <div class="comment-header">
-            <div class="commeent-name">${comment.name}</div>
-            <div>${dateTime} </div>
-          </div>
-          <div class="comment-body">
-            <div class="comment-text">${comment.text}  
-            </div>
-          </div>
-         <div class="comment-footer">
-            <div class="likes">
-              <span  class="likes-counter">${comment.likes}</span>
-              <button data-index ='${index}' class="${
+             <div class="comment-header">
+               <div class="commeent-name">${comment.name}</div>
+               <div>${dateTime} </div>
+             </div>
+             <div class="comment-body">
+               <div class="comment-text">${comment.text}
+               </div>
+             </div>
+            <div class="comment-footer">
+               <div class="likes">
+                 <span  class="likes-counter">${comment.likes}</span>
+                 <button data-index ='${index}' class="${
             comments[index].isLiked ? "like-button -active-like" : "like-button"
           }">
-                <div></div>
-                </button>
-            </div>
-          </div>
+                   <div></div>
+                   </button>
+               </div>
+             </div>
 
-        </li>`;
+           </li>`;
         })
         .join("");
 
@@ -183,19 +184,23 @@
             body: JSON.stringify({
               text: textInputElement.value,
               name: nameInputElement.value,
-              forceError: true,
+              //             forceError: true,
             }),
           }
         )
           .then((response) => {
-            if (response.status === 500){
-              throw new Error("Ошибка сервера");
+            if (response.status === 200) {
+              return response.json();
             }
-            if (response.status === 400){
-              throw new Error("Неверный запрос");
-            }
-            return response.json();
-          })
+            if (response.status === 500) {
+                throw new Error("Ошибка сервера");
+              }
+            if (response.status === 400) {
+                  throw new Error("Неверный запрос");
+                }
+              })
+            
+          
           .then((responseData) => {
             fetchPromiseGet();
             renderComments();
@@ -206,18 +211,34 @@
             loading.style.display = "none";
             hideForm.style.display = oldLoaderDisplay;
           })
-          .catch((error) =>{
+          .catch((error) => {
             loading.style.display = "none";
             hideForm.style.display = "flex";
             forceError: false;
-            if (error.message === "Ошибка сервера"){
-              alert ("Сервер сломался, попробуйте позже");
-            }
-            if (error.message === "Неверный запрос"){
-              alert("Имя и комментарий должны быть не короче 3х символов");
-            }
-          })
-         
+
+            switch (error.message) {
+              case "Ошибка сервера":
+                alert("Сервер сломался, попробуйте позже");
+                break;
+              case "Неверный запрос":
+                alert("Имя и комментарий должны быть не короче 3х символов");
+                break;
+              default:
+                alert("Возникла ошибка!");
+                   }
+      //      if (error.message === "Ошибка сервера") {
+      //        alert("Сервер сломался, попробуйте позже");
+      //      }
+      //      if (error.message === "Неверный запрос") {
+      //        alert("Имя и комментарий должны быть не короче 3х символов");
+      //      }
+      //      if (error.message === "Нет сервера") {
+      //         alert("Ошибка сети");
+      //       }
+      //       if (error.message === "ошибка") {
+      //         alert("Возникла ошибка");
+      //       }
+          });
       };
       fetchPromisePost();
     });
