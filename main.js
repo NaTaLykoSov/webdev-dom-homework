@@ -3,7 +3,6 @@ import { renderComments } from "./renderComments.js";
 import { initEventListeners } from "./like.js";
 
 const buttonElement = document.getElementById("add-button");
-
 const addFormElement = document.getElementById("addForm");
 const nameInputElement = document.getElementById("name-input");
 const textInputElement = document.getElementById("text-input");
@@ -13,14 +12,9 @@ const hideForm = document.querySelector(".add-form");
 const loading = document.getElementById("loading");
 var oldLoaderDisplay = hideForm.style.display;
 
-
-
-
-
 let comments = [
   //
 ];
-
 
 const fetchPromiseGet = () => {
   commentsGet().then((responseData) => {
@@ -48,15 +42,12 @@ const fetchPromiseGet = () => {
     });
 };
 fetchPromiseGet();
-
-
 renderComments({comments});
 
 nameInputElement.value = "";
 textInputElement.value = "";
 
-// hideForm.style.display = "none";
-// hideForm. addFormElement = "Комментарий добавляется..."
+
 
 buttonElement.addEventListener("click", () => {
   buttonElement.classList.remove("error");
@@ -67,6 +58,7 @@ buttonElement.addEventListener("click", () => {
   oldLoaderDisplay = hideForm.style.display;
   hideForm.style.display = "none";
   loading.style.display = "block";
+ 
 
   const fetchPromisePost = () => {
     commentsPost(textInputElement, nameInputElement).then((response) => {
@@ -93,7 +85,7 @@ buttonElement.addEventListener("click", () => {
       .catch((error) => {
         loading.style.display = "none";
         hideForm.style.display = "flex";
-     //   forceError: false;
+     // forceError: false;
 
         switch (error.message) {
           case "Ошибка сервера":
@@ -105,18 +97,6 @@ buttonElement.addEventListener("click", () => {
           default:
             alert("Возникла ошибка!");
                }
-  //      if (error.message === "Ошибка сервера") {
-  //        alert("Сервер сломался, попробуйте позже");
-  //      }
-  //      if (error.message === "Неверный запрос") {
-  //        alert("Имя и комментарий должны быть не короче 3х символов");
-  //      }
-  //      if (error.message === "Нет сервера") {
-  //         alert("Ошибка сети");
-  //       }
-  //       if (error.message === "ошибка") {
-  //         alert("Возникла ошибка");
-  //       }
       });
   };
   fetchPromisePost();
