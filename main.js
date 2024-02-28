@@ -16,6 +16,8 @@ let comments = [
   //
 ];
 
+loading.style.display = "none";
+
 const fetchPromiseGet = () => {
   commentsGet().then((responseData) => {
       const appComments = responseData.comments.map((comment) => {
@@ -29,7 +31,7 @@ const fetchPromiseGet = () => {
       });
       comments = appComments;
       renderComments({comments});
-      hidePreloader.style.display = "none";
+      // hidePreloader.style.display = "none";
     })
     .catch((error) => {
       if (error.message === "Сервер упал") {
