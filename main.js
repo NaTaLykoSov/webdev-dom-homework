@@ -1,17 +1,15 @@
 import { commentsGet} from "./api.js";
 import { renderComments } from "./renderComments.js";
-
 import { initEventListeners } from "./like.js";
 import { renderLogin } from "./renderLogin.js";
 
- export let comments = [
+let comments = [
   //
 ];
 
 
-const fetchPromiseGet = () => {
-  commentsGet()
-    .then((responseData) => {
+export const fetchPromiseGet = (AuthName) => {
+  commentsGet().then((responseData) => {
       const appComments = responseData.comments.map((comment) => {
         return {
           name: comment.author.name,
@@ -22,8 +20,8 @@ const fetchPromiseGet = () => {
         };
       });
       comments = appComments;
-      renderComments(comments);
-      hidePreloader.style.display = "none";
+      renderComments(comments, AuthName);
+      // hidePreloader.style.display = "none";
     })
     .catch((error) => {
       if (error.message === "Сервер упал") {
@@ -34,12 +32,13 @@ const fetchPromiseGet = () => {
         return Promise.reject("Сервер упал");
       }
     });
-fetchPromiseGet();
+// fetchPromiseGet();
 };
+
+fetchPromiseGet("");
 
 renderLogin();
 
-renderComments(comments);
 initEventListeners(comments);
 
 

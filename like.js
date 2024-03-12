@@ -1,6 +1,6 @@
 import { renderComments } from "./renderComments.js";
 
-export const initEventListeners = ({comments}) => {
+export const initEventListeners = (comments) => {
     const likeButtonElements = document.querySelectorAll(".like-button");
     for (const likeButtonElement of likeButtonElements) {
       likeButtonElement.addEventListener("click", (event) => {
@@ -14,7 +14,7 @@ export const initEventListeners = ({comments}) => {
           comments[index].isLiked = false;
         }
       
-      renderComments({comments});
+      renderComments(comments, "");
 
       });
     }

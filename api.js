@@ -2,18 +2,16 @@ const host = "https://wedev-api.sky.pro/api/v2/nata_kosovskaya/comments";
 const userURL = "https://wedev-api.sky.pro/api/user/login";
 
 export let token;
-
 export const setToken = (newToken) =>{
   token = newToken;
 };
-
 export const commentsGet = () => {
 return fetch(host,
     {
       method: "GET",
       headers:{
         Authorization: `Bearer ${token}`,
-      },
+      }
     }
   )
     .then((response) => {
@@ -38,9 +36,10 @@ export const commentsPost = (text, name) => {
             name: name.value,
             //forceError: true,
           }),
-          
-        }
-      )
+        })
+        .then((response) => {
+          return response.json();
+        })
 }
 
 export const login = ({login, password}) => {

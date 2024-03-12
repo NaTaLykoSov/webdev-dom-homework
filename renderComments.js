@@ -1,9 +1,8 @@
 import { initEventListeners } from "./like.js";
 import { commentsPost } from "./api.js";
-import {renderLogin} from "./renderLogin.js";
+import { renderLogin } from "./renderLogin.js";
 
-
-export const renderComments = (comments) => {
+export const renderComments = (comments, AuthName) => {
   const appElement = document.getElementById("app");
   const commentsHTML = comments.map((comment, index) => {
         let newTime = {
@@ -46,7 +45,7 @@ export const renderComments = (comments) => {
 
       const appHTML = 
       `<div class="container">
-      <ul id = "list-input" class="comments">
+      <ul id = "list-input" class="comments">  ${commentsHTML}
   <!-- Список в JS -->
       </ul>
       <div class="add-form">
@@ -68,9 +67,7 @@ export const renderComments = (comments) => {
         </div>
         </div>
         <br />
-        <a href="login.html" class = "link" id="link-to-comments">
-        Чтобы добавить комментарий, необходимо авторизоваться</a>
-        ${commentsHTML}`
+        <button class="add-form-button-auth" id = "auth-button"> Чтобы добавить комментарий, необходимо авторизоваться</button>`
       
     appElement.innerHTML = appHTML;
         
@@ -79,7 +76,14 @@ export const renderComments = (comments) => {
     const buttonElement = document.getElementById("add-button");
     const nameInputElement = document.getElementById("name-input");
     const textInputElement = document.getElementById("text-input");
+    const buttonAuth = document.getElementById("auth-button");
 
+    nameInputElement.value=AuthName;
+    nameInputElement.setAttribute("readonly", "true");
+
+    buttonAuth.addEventListener("click", () => {
+        renderLogin();
+    });
     buttonElement.addEventListener("click", () => {
       buttonElement.classList.remove("error");
       if (nameInputElement.value === "" || textInputElement.value === "") {
@@ -98,22 +102,21 @@ export const renderComments = (comments) => {
                   throw new Error("Неверный запрос");
                 }
               })
-           .then((responseData) => {
-            // fetchPromiseGet();
-            renderComments(comments);
-            nameInputElement.value = "";
-            textInputElement.value = "";
-          })
-          .then((data) => {
-            // loading.style.display = "none";
-            hideForm.style.display = oldLoaderDisplay;
-          })
+          //  .then((responseData) => {
+          //   // fetchPromiseGet();
+          //   renderComments(comments);
+          //   nameInputElement.value = "";
+          //   textInputElement.value = "";
+          // })
+          // .then((data) => {
+          //   loading.style.display = "none";
+          //   hideForm.style.display = oldLoaderDisplay;
+          // })
           .catch((error) => {
-            // loading.style.display = "none";
-            // hideForm.style.display = "flex";
-         // forceError: false;
-    
-            switch (error.message) {
+            loading.style.display = "none";
+            hideForm.style.display = "flex";
+            // forceError: false;
+                switch (error.message) {
               case "Ошибка сервера":
                 alert("Сервер сломался, попробуйте позже");
                 break;
@@ -126,9 +129,10 @@ export const renderComments = (comments) => {
           });
       };
       fetchPromisePost();
-    });
+}
+  );
   };
-// };
+// /};
   // nameInputElement.value = "";
   // textInputElement.value = "";
-  // initEventListeners(comments);
+// initEventListeners(comments);

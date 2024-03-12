@@ -1,9 +1,8 @@
 import { login, setToken, token } from "./api.js";
+import { fetchPromiseGet } from "./main.js";
 import { renderComments } from "./renderComments.js";
-import { initEventListeners } from "./like.js";
-import { comments } from "./main.js";
 
-export const renderLogin = () => {
+export const renderLogin = ()=> {
 const appElement = document.getElementById("app");
 const loginHTML = ` <div class="container">
 <h1>Авторизация</h1>
@@ -37,12 +36,16 @@ login({login: loginInputElement.value,
 ).then((responseData) => {
   // console.log(token);
   setToken(responseData.user.token);
-  console.log(token);
+  console.log(responseData.user.token)
+  return fetchPromiseGet(loginInputElement.value);
 })
-.then(() =>{
 
-renderComments(comments);
-
+.catch((error) =>{
+  console.log(error);
+  return alert("Неправильное имя пользователя или пароль")
 })
+// .then(() =>{
+//   ;
+// })
 });
 };
