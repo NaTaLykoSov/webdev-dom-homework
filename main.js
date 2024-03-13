@@ -6,6 +6,7 @@ import { renderLogin } from "./renderLogin.js";
 let comments = [
   //
 ];
+var AuthName="";
 
 
 export const fetchPromiseGet = (AuthName) => {
@@ -39,7 +40,7 @@ fetchPromiseGet("");
 
 renderLogin();
 
-initEventListeners(comments);
+initEventListeners(comments,AuthName);
 
 
 //

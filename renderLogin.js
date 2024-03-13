@@ -37,7 +37,7 @@ login({login: loginInputElement.value,
   // console.log(token);
   setToken(responseData.user.token);
   console.log(responseData.user.token)
-  return fetchPromiseGet(loginInputElement.value);
+  return fetchPromiseGet(loginInputElement.value );
 })
 
 .catch((error) =>{

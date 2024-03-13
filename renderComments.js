@@ -1,6 +1,8 @@
 import { initEventListeners } from "./like.js";
 import { commentsPost } from "./api.js";
 import { renderLogin } from "./renderLogin.js";
+import { fetchPromiseGet } from "./main.js";
+
 
 export const renderComments = (comments, AuthName) => {
   const appElement = document.getElementById("app");
@@ -70,16 +72,29 @@ export const renderComments = (comments, AuthName) => {
         <button class="add-form-button-auth" id = "auth-button"> Чтобы добавить комментарий, необходимо авторизоваться</button>`
       
     appElement.innerHTML = appHTML;
+
         
-    initEventListeners(comments);
+    initEventListeners(comments, AuthName);
 
     const buttonElement = document.getElementById("add-button");
     const nameInputElement = document.getElementById("name-input");
     const textInputElement = document.getElementById("text-input");
     const buttonAuth = document.getElementById("auth-button");
-
+    
+    const hideForm = document.querySelector(".add-form");
+    var oldLoaderDisplay="";
+    
     nameInputElement.value=AuthName;
-    nameInputElement.setAttribute("readonly", "true");
+    
+    if (AuthName==="") {
+       oldLoaderDisplay=hideForm.style.display;
+        hideForm.style.display="none";
+    };
+    if (AuthName.length>=3) {
+      nameInputElement.setAttribute("readonly", "true");
+      nameInputElement.setAttribute("disabled", "true");
+      buttonAuth.style.display="none";
+    };
 
     buttonAuth.addEventListener("click", () => {
         renderLogin();
@@ -102,18 +117,18 @@ export const renderComments = (comments, AuthName) => {
                   throw new Error("Неверный запрос");
                 }
               })
-          //  .then((responseData) => {
-          //   // fetchPromiseGet();
-          //   renderComments(comments);
-          //   nameInputElement.value = "";
-          //   textInputElement.value = "";
-          // })
-          // .then((data) => {
-          //   loading.style.display = "none";
-          //   hideForm.style.display = oldLoaderDisplay;
-          // })
+           .then((responseData) => {
+            fetchPromiseGet(AuthName);
+            nameInputElement.value = "";
+            textInputElement.value = "";
+          })
+          .then((data) => {
+            // loading.style.display = "none";
+            // renderComments(comments, AuthName);
+            hideForm.style.display = oldLoaderDisplay;
+          })
           .catch((error) => {
-            loading.style.display = "none";
+            // loading.style.display = "none";
             hideForm.style.display = "flex";
             // forceError: false;
                 switch (error.message) {
@@ -127,12 +142,16 @@ export const renderComments = (comments, AuthName) => {
                 alert("Возникла ошибка!");
                    }
           });
-      };
+        
+        };
       fetchPromisePost();
+      
 }
   );
   };
-// /};
+
+
+  // /};
   // nameInputElement.value = "";
   // textInputElement.value = "";
 // initEventListeners(comments);
