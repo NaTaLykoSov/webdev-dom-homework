@@ -1,24 +1,15 @@
-import { commentsGet, commentsPost } from "./api.js";
+import { commentsGet} from "./api.js";
 import { renderComments } from "./renderComments.js";
 import { initEventListeners } from "./like.js";
-
-const buttonElement = document.getElementById("add-button");
-const addFormElement = document.getElementById("addForm");
-const nameInputElement = document.getElementById("name-input");
-const textInputElement = document.getElementById("text-input");
-const formText = document.querySelector(".add-form-text");
-const hidePreloader = document.getElementById("preloading");
-const hideForm = document.querySelector(".add-form");
-const loading = document.getElementById("loading");
-var oldLoaderDisplay = hideForm.style.display;
+import { renderLogin } from "./renderLogin.js";
 
 let comments = [
   //
 ];
+var AuthName="";
 
-loading.style.display = "none";
 
-const fetchPromiseGet = () => {
+export const fetchPromiseGet = (AuthName) => {
   commentsGet().then((responseData) => {
       const appComments = responseData.comments.map((comment) => {
         return {
@@ -30,7 +21,7 @@ const fetchPromiseGet = () => {
         };
       });
       comments = appComments;
-      renderComments({comments});
+      renderComments(comments, AuthName);
       // hidePreloader.style.display = "none";
     })
     .catch((error) => {
@@ -42,71 +33,15 @@ const fetchPromiseGet = () => {
         return Promise.reject("Сервер упал");
       }
     });
+// fetchPromiseGet();
 };
-fetchPromiseGet();
-renderComments({comments});
 
-nameInputElement.value = "";
-textInputElement.value = "";
+fetchPromiseGet("");
 
+renderLogin();
 
+initEventListeners(comments,AuthName);
 
-buttonElement.addEventListener("click", () => {
-  buttonElement.classList.remove("error");
-  if (nameInputElement.value === "" || textInputElement.value === "") {
-    buttonElement.classList.add("error");
-    return;
-  }
-  oldLoaderDisplay = hideForm.style.display;
-  hideForm.style.display = "none";
-  loading.style.display = "block";
- 
-
-  const fetchPromisePost = () => {
-    commentsPost(textInputElement, nameInputElement).then((response) => {
-        if (response.status === 200) {
-          return response.json();
-        }
-        if (response.status === 500) {
-            throw new Error("Ошибка сервера");
-          }
-        if (response.status === 400) {
-              throw new Error("Неверный запрос");
-            }
-          })
-       .then((responseData) => {
-        fetchPromiseGet();
-        renderComments({comments});
-        nameInputElement.value = "";
-        textInputElement.value = "";
-      })
-      .then((data) => {
-        loading.style.display = "none";
-        hideForm.style.display = oldLoaderDisplay;
-      })
-      .catch((error) => {
-        loading.style.display = "none";
-        hideForm.style.display = "flex";
-     // forceError: false;
-
-        switch (error.message) {
-          case "Ошибка сервера":
-            alert("Сервер сломался, попробуйте позже");
-            break;
-          case "Неверный запрос":
-            alert("Имя и комментарий должны быть не короче 3х символов");
-            break;
-          default:
-            alert("Возникла ошибка!");
-               }
-      });
-  };
-  fetchPromisePost();
-});
-
-nameInputElement.value = "";
-textInputElement.value = "";
-initEventListeners({comments});
 
 //
 // answerComment();

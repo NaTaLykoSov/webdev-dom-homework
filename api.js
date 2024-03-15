@@ -1,9 +1,17 @@
-export const commentsGet = () => {
+const host = "https://wedev-api.sky.pro/api/v2/nata_kosovskaya/comments";
+const userURL = "https://wedev-api.sky.pro/api/user/login";
 
-return fetch(
-    "https://wedev-api.sky.pro/api/v1/nata_kosovskaya/comments",
+export let token;
+export const setToken = (newToken) =>{
+  token = newToken;
+};
+export const commentsGet = () => {
+return fetch(host,
     {
       method: "GET",
+      headers:{
+        Authorization: `Bearer ${token}`,
+      }
     }
   )
     .then((response) => {
@@ -14,18 +22,36 @@ return fetch(
         return Promise.reject("Сервер упал");
       }
     });
-}
+    }
 
 export const commentsPost = (text, name) => {
-    return fetch(
-        "https://wedev-api.sky.pro/api/v1/nata_kosovskaya/comments",
+    return fetch(host,
         {
           method: "POST",
+          headers:{
+            Authorization: `Bearer ${token}`,
+          },
           body: JSON.stringify({
             text: text.value,
             name: name.value,
             //forceError: true,
           }),
-        }
-      )
+        })
+        .then((response) => {
+          return response.json();
+        })
+}
+
+export const login = ({login, password}) => {
+  return fetch(userURL,
+      {
+        method: "POST",
+        body: JSON.stringify({
+        login, 
+        password,
+      }),
+      })
+      .then((response) => {
+          return response.json();
+        })
 }
