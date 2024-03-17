@@ -55,3 +55,4 @@ export const login = ({login, password}) => {
           return response.json();
         })
 }
+
