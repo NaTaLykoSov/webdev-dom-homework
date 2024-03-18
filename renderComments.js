@@ -13,7 +13,7 @@ export const renderComments = (comments, AuthName) => {
             minute: "numeric",
           };
           const time = new Date();
-          let dateTime =
+          let dateTime = format(comment.date, 'yyyy-MM-dd hh.mm.ss');
             comment.date.getDate() +
             "." +
             (comment.date.getMonth() + 1) +
